@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man English Grammar & Spelling Arcade</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Press Start 2P (Arcade) & Plus Jakarta Sans (Legibility) -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arcade: ['"Press Start 2P"', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        pacman: {
+                            yellow: '#FFE600',
+                            blue: '#1919A6',
+                            neonBlue: '#00D8FF',
+                            blinkyRed: '#FF0000',
+                            pinkyPink: '#FFB8FF',
+                            inkyCyan: '#00FFFF',
+                            clydeOrange: '#FFB852',
+                            scaredBlue: '#0000FF',
+                            bgDark: '#0A0A16',
+                            cardBg: '#12122C',
+                            mazeWall: '#2121FF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Pac-Man Retro Arcade Neon Styling */
+        body {
+            background-color: #050512;
+            background-image: 
+                radial-gradient(#1919A6 1.5px, transparent 1.5px), 
+                radial-gradient(#1919A6 1.5px, #050512 1.5px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            color: #FFFFFF;
+        }
+
+        .arcade-card {
+            background-color: #0E0E26;
+            border: 3.5px solid #00D8FF;
+            border-radius: 16px;
+            box-shadow: 0 0 15px rgba(0, 216, 255, 0.3), inset 0 0 10px rgba(0, 216, 255, 0.1);
+        }
+
+        .arcade-card-yellow {
+            background-color: #161500;
+            border: 3.5px solid #FFE600;
+            border-radius: 16px;
+            box-shadow: 0 0 15px rgba(255, 230, 0, 0.3);
+        }
+
+        .arcade-card-pink {
+            background-color: #1A0D1A;
+            border: 3.5px solid #FFB8FF;
+            border-radius: 16px;
+            box-shadow: 0 0 15px rgba(255, 184, 255, 0.3);
+        }
+
+        .arcade-btn {
+            border: 3px solid #00D8FF;
+            border-radius: 12px;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0px 5px 0px 0px #005A70;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        .arcade-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0px 7px 0px 0px #005A70;
+            filter: brightness(1.15);
+        }
+
+        .arcade-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0px 2px 0px 0px #005A70;
+        }
+
+        .pacman-pellet {
+            width: 10px;
+            height: 10px;
+            background-color: #FFE600;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px #FFE600;
+        }
+
+        .power-pellet {
+            width: 16px;
+            height: 16px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #FFFFFF;
+            animation: blinkPellet 0.6s infinite alternate;
+        }
+
+        @keyframes blinkPellet {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Ghost animation */
+        .ghost-float {
+            animation: floatGhost 2s ease-in-out infinite alternate;
+        }
+        @keyframes floatGhost {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-6px); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0E0E26;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00D8FF;
+            border-radius: 4px;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="font-sans min-h-full flex flex-col justify-between selection:bg-pacman-yellow selection:text-black">
+
+    <header class="bg-black/80 border-b-4 border-pacman-neonBlue shadow-[0_0_15px_rgba(0,216,255,0.4)] no-print relative backdrop-blur-md">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Arcade Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-black border-2 border-pacman-yellow rounded-xl flex items-center justify-center text-2xl shadow-[0_0_10px_#FFE600]">
+                    🟡
+                </div>
+                <div>
+                    <h1 class="font-arcade text-xs sm:text-sm text-pacman-yellow tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        PAC-ENGLISH MAZE
+                    </h1>
+                    <p class="text-[11px] text-pacman-neonBlue font-semibold">Grammar & Spelling Arcade Edition</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center gap-2">
+                <!-- BGM Music Toggle -->
+                <button id="bgmToggleBtn" onclick="toggleBGM()" class="arcade-btn bg-purple-950/80 border-purple-400 text-purple-200 px-3 py-2 text-[10px] font-bold flex items-center gap-1.5">
+                    <i id="bgmIcon" class="fa-solid fa-music text-purple-400"></i>
+                    <span id="bgmText" class="hidden sm:inline">BGM: OFF</span>
+                </button>
+
+                <!-- SFX Toggle -->
+                <button id="soundToggleBtn" onclick="toggleSound()" class="arcade-btn bg-teal-950/80 border-pacman-neonBlue text-pacman-neonBlue px-3 py-2 text-[10px] font-bold flex items-center gap-1.5">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-pacman-neonBlue"></i>
+                    <span id="soundText" class="hidden sm:inline">SFX: ON</span>
+                </button>
+
+                <!-- Scoreboard Link -->
+                <button onclick="showLeaderboardView()" class="arcade-btn bg-amber-950/80 border-pacman-yellow text-pacman-yellow px-3 py-2 text-[10px] font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy text-pacman-yellow"></i>
+                    <span>High Scores</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-3 sm:p-5 my-2 flex-grow flex flex-col justify-center">
+
+        <!-- PLAYER REGISTRATION VIEW -->
+        <section id="welcomeView" class="arcade-card p-5 sm:p-8 text-center relative">
+            <!-- Arcade Marquee Header -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-black/80 px-6 py-2.5 border-2 border-pacman-yellow rounded-xl flex items-center gap-3 shadow-[0_0_12px_#FFE600]">
+                    <span class="power-pellet"></span>
+                    <span class="font-arcade text-pacman-yellow text-xs sm:text-sm tracking-wider">INSERT COIN TO PLAY</span>
+                    <span class="power-pellet"></span>
+                </div>
+            </div>
+
+            <!-- Arcade Ghosts Display -->
+            <div class="flex justify-center items-center gap-4 text-3xl mb-4 ghost-float">
+                <span title="Blinky">🔴</span>
+                <span title="Pinky">🩷</span>
+                <span title="Pac-Man" class="text-4xl animate-pulse">🟡</span>
+                <span title="Inky">🩵</span>
+                <span title="Clyde">🟠</span>
+            </div>
+
+            <h2 class="font-arcade text-base sm:text-lg text-pacman-yellow mb-2 tracking-wide">PAC-MAN ENGLISH QUEST</h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto mb-6 leading-relaxed font-semibold">
+                Dodge the ghosts and navigate through 20 Grammar & Spelling Maze Dots across 3 Arcade Tiers: 
+                <span class="text-pacman-neonBlue font-bold underline">Stage 1: Fruit Maze (Easy)</span>, 
+                <span class="text-pacman-clydeOrange font-bold underline">Stage 2: Ghost Tunnel (Medium)</span> & 
+                <span class="text-pacman-blinkyRed font-bold underline">Stage 3: Boss Maze (Hard)</span>!
+            </p>
+
+            <form id="startForm" onsubmit="handleStartGame(event)" class="max-w-md mx-auto text-left space-y-4">
+                <div class="bg-black/60 p-5 border-2 border-pacman-neonBlue rounded-2xl space-y-4 shadow-inner">
+                    <div>
+                        <label class="block font-arcade text-[10px] text-pacman-neonBlue mb-1.5">Arcade Player Name <span class="text-rose-400">*</span></label>
+                        <input type="text" id="studentName" required placeholder="e.g. PacMaster99" class="w-full px-3.5 py-2.5 bg-slate-900 text-white font-bold border-2 border-pacman-neonBlue rounded-xl outline-none text-xs focus:ring-2 focus:ring-pacman-yellow">
+                    </div>
+
+                    <div>
+                        <label class="block font-arcade text-[10px] text-pacman-neonBlue mb-1.5">Class / Arcade Room <span class="text-rose-400">*</span></label>
+                        <input type="text" id="studentClass" required placeholder="e.g. 5 Innovation" class="w-full px-3.5 py-2.5 bg-slate-900 text-white font-bold border-2 border-pacman-neonBlue rounded-xl outline-none text-xs focus:ring-2 focus:ring-pacman-yellow">
+                    </div>
+
+                    <!-- Avatar Character Selector -->
+                    <div>
+                        <label class="block font-arcade text-[10px] text-pacman-yellow mb-2">Choose Arcade Avatar:</label>
+                        <div class="grid grid-cols-5 gap-2" id="avatarSelector">
+                            <!-- Populated dynamically via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="arcade-btn w-full py-4 bg-pacman-yellow border-amber-300 text-black text-xs sm:text-sm flex items-center justify-center gap-3 mt-4 font-bold">
+                    <span>START PAC-STUDY GUIDE</span>
+                    <i class="fa-solid fa-gamepad text-base"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- STUDY SLIDES VIEW -->
+        <section id="slidesView" class="hidden arcade-card-pink p-4 sm:p-6 text-white">
+            <!-- Header & Timer Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-pink-900/60 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 bg-pink-950 text-pacman-pinkyPink flex items-center justify-center text-xl border-2 border-pacman-pinkyPink rounded-xl font-bold shadow-[0_0_8px_#FFB8FF]">
+                        👻
+                    </span>
+                    <div>
+                        <h2 class="font-arcade text-xs sm:text-sm text-pacman-pinkyPink">Pac-Study Notes</h2>
+                        <p class="text-[11px] text-slate-300 font-semibold">Review the grammar rules before entering the Pac-Man maze.</p>
+                    </div>
+                </div>
+
+                <!-- Slide Indicator & 10s Timer -->
+                <div class="flex items-center gap-2">
+                    <span id="slideIndicator" class="px-3 py-1 bg-black text-pacman-yellow border-2 border-pacman-yellow rounded-lg text-[10px] font-arcade">
+                        Slide 1/3
+                    </span>
+                    <div class="flex items-center gap-1.5 px-3 py-1 bg-rose-950 text-rose-300 font-arcade text-[10px] border-2 border-rose-500 rounded-lg">
+                        <span>⏳ Lock Timer: <span id="slideTimerCount" class="text-pacman-yellow font-bold text-xs">10</span>s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide Content Container -->
+            <div id="slideContentBox" class="bg-black/80 p-4 sm:p-6 border-2 border-pacman-pinkyPink rounded-2xl space-y-4 min-h-[300px] flex flex-col justify-center">
+                <!-- Slide content dynamically injected via JS -->
+            </div>
+
+            <!-- Lock Status & Next Button -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="text-[11px] font-semibold text-rose-300 flex items-center gap-2 bg-rose-950/70 px-3 py-1.5 border border-rose-500/50 rounded-lg">
+                    <i class="fa-solid fa-lock text-rose-400" id="slideLockIcon"></i>
+                    <span id="slideLockText">Next button locked until timer completes 10s.</span>
+                </div>
+
+                <button id="nextSlideBtn" onclick="nextSlide()" disabled class="arcade-btn px-6 py-3 bg-pacman-yellow border-amber-300 disabled:opacity-40 disabled:cursor-not-allowed text-black text-[10px] flex items-center gap-2">
+                    <span id="nextSlideBtnText">Wait (10s)...</span>
+                    <i id="nextSlideBtnIcon" class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- QUIZ VIEW -->
+        <section id="quizView" class="hidden space-y-3">
+            <!-- Top Status Bar -->
+            <div class="arcade-card p-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <span id="playerAvatarDisplay" class="text-2xl bg-black p-1.5 border-2 border-pacman-neonBlue rounded-xl">🟡</span>
+                    <div>
+                        <div id="playerNameDisplay" class="font-arcade text-[11px] text-pacman-yellow">Player</div>
+                        <div id="playerClassDisplay" class="text-[10px] text-slate-300 font-bold">Class</div>
+                    </div>
+                </div>
+
+                <!-- Level Stage Badge -->
+                <div class="flex items-center gap-2">
+                    <span id="levelBadge" class="px-3 py-1 text-[10px] font-arcade bg-emerald-950 text-emerald-300 border-2 border-emerald-400 rounded-lg">
+                        Stage: Easy
+                    </span>
+                    <span id="streakBadge" class="hidden px-2.5 py-1 text-[10px] font-arcade bg-yellow-950 text-pacman-yellow border-2 border-pacman-yellow rounded-lg animate-pulse">
+                        🔥 <span id="streakCount">0</span> Ghost Combo
+                    </span>
+                </div>
+
+                <!-- High Score EXP Tracker -->
+                <div class="flex items-center gap-2 bg-black px-3 py-1.5 border-2 border-pacman-neonBlue rounded-xl">
+                    <span class="text-lg">🟡</span>
+                    <div class="text-right">
+                        <span class="text-[9px] text-pacman-neonBlue font-arcade uppercase">ARCADE EXP:</span>
+                        <span id="liveScore" class="font-arcade text-xs text-pacman-yellow ml-1">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arcade Progress Dot Bar -->
+            <div class="bg-black p-1 border-2 border-pacman-neonBlue rounded-full shadow-[0_0_8px_rgba(0,216,255,0.3)]">
+                <div id="progressBar" class="bg-pacman-yellow h-3 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_#FFE600]"></div>
+            </div>
+
+            <!-- Question Box Container -->
+            <div class="arcade-card p-5 sm:p-7 relative">
+                <div class="flex justify-between items-center mb-3">
+                    <span id="questionNumText" class="font-arcade text-[10px] text-pacman-yellow bg-black px-3 py-1 border-2 border-pacman-yellow rounded-lg">
+                        Dot 1/20
+                    </span>
+                    <span id="categoryBadge" class="text-[11px] font-bold text-pacman-pinkyPink bg-pink-950 px-2.5 py-1 border border-pacman-pinkyPink rounded-md flex items-center gap-1">
+                        <i class="fa-solid fa-spell-check text-pacman-pinkyPink"></i> Spelling
+                    </span>
+                </div>
+
+                <h3 id="questionText" class="text-sm sm:text-base font-bold text-white mb-5 leading-relaxed bg-black/80 p-4 border-2 border-pacman-neonBlue rounded-xl">
+                    Loading Pac-Man question...
+                </h3>
+
+                <!-- Answer Option Buttons Grid -->
+                <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Dynamic Buttons generated via JS -->
+                </div>
+
+                <!-- Feedback Explanation Box -->
+                <div id="feedbackBox" class="hidden mt-4 p-4 border-2 rounded-xl flex items-start gap-3 transition-all duration-200">
+                    <i id="feedbackIcon" class="fa-solid text-xl mt-0.5"></i>
+                    <div>
+                        <div id="feedbackTitle" class="font-arcade text-[10px]">Ghost Cleared!</div>
+                        <div id="feedbackExplanation" class="text-xs mt-1 font-semibold leading-relaxed">Grammar rule explanation...</div>
+                    </div>
+                </div>
+
+                <!-- Next Checkpoint Button -->
+                <div class="mt-5 flex justify-end">
+                    <button id="nextBtn" onclick="nextQuestion()" disabled class="arcade-btn px-6 py-3 bg-pacman-yellow border-amber-300 disabled:opacity-40 disabled:cursor-not-allowed text-black text-[10px] flex items-center gap-2">
+                        <span>Next Dot Checkpoint</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULT VIEW -->
+        <section id="resultView" class="hidden arcade-card-yellow p-6 sm:p-8 text-center space-y-5">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-black text-4xl border-3 border-pacman-yellow rounded-2xl shadow-[0_0_15px_#FFE600] animate-bounce">
+                👾
+            </div>
+
+            <div>
+                <h2 class="font-arcade text-base sm:text-xl text-pacman-yellow">PAC-MAZE CLEARED!</h2>
+                <p class="text-xs text-slate-300 mt-2 font-semibold">Your arcade score record has been registered to the hall of fame.</p>
+            </div>
+
+            <!-- Score Stats Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto text-center font-arcade">
+                <div class="bg-black p-3.5 border-2 border-pacman-yellow rounded-xl">
+                    <div class="text-[9px] text-pacman-yellow mb-1">SCORE</div>
+                    <div id="finalScoreDisplay" class="text-sm text-white font-bold">0/20</div>
+                </div>
+                <div class="bg-black p-3.5 border-2 border-pacman-neonBlue rounded-xl">
+                    <div class="text-[9px] text-pacman-neonBlue mb-1">ACCURACY</div>
+                    <div id="finalPercentDisplay" class="text-sm text-white font-bold">0%</div>
+                </div>
+                <div class="bg-black p-3.5 border-2 border-pacman-clydeOrange rounded-xl">
+                    <div class="text-[9px] text-pacman-clydeOrange mb-1">RANK</div>
+                    <div id="finalGradeDisplay" class="text-[10px] text-pacman-yellow font-bold">Pac Master</div>
+                </div>
+                <div class="bg-black p-3.5 border-2 border-pacman-pinkyPink rounded-xl">
+                    <div class="text-[9px] text-pacman-pinkyPink mb-1">TIME</div>
+                    <div id="timeTakenDisplay" class="text-[10px] text-white font-bold">0m 0s</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap justify-center gap-3 pt-3">
+                <button onclick="showProofCertificate()" class="arcade-btn px-5 py-3 bg-emerald-400 border-emerald-200 text-black text-[10px] flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Score Proof Card (Screenshot)</span>
+                </button>
+                <button onclick="showReviewAnswers()" class="arcade-btn px-5 py-3 bg-purple-400 border-purple-200 text-black text-[10px] flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Review Answers</span>
+                </button>
+                <button onclick="showLeaderboardView()" class="arcade-btn px-5 py-3 bg-pacman-yellow border-amber-300 text-black text-[10px] flex items-center gap-2">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>High Scores</span>
+                </button>
+                <button onclick="restartGame()" class="arcade-btn px-5 py-3 bg-slate-800 border-slate-500 text-white text-[10px] flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Play Again</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- REVIEW VIEW -->
+        <section id="reviewView" class="hidden arcade-card p-5 space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-slate-700 pb-3">
+                <div>
+                    <h2 class="font-arcade text-xs sm:text-sm text-pacman-yellow">Pac-Man Answer Log</h2>
+                    <p class="text-xs text-slate-300 font-semibold">Check your answers and grammar rules.</p>
+                </div>
+                <button onclick="backToResult()" class="arcade-btn px-3.5 py-2 bg-rose-500 text-black text-[10px]">
+                    Back
+                </button>
+            </div>
+
+            <div id="reviewList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- PROOF / CERTIFICATE VIEW FOR SCREENSHOT -->
+        <section id="proofView" class="hidden">
+            <div class="mb-3 no-print flex justify-between items-center">
+                <button onclick="backToResult()" class="arcade-btn px-3.5 py-2 bg-rose-500 text-black text-[10px]">
+                    Back
+                </button>
+                <button onclick="window.print()" class="arcade-btn px-4 py-2 bg-pacman-yellow text-black text-[10px] flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Print / Save PDF</span>
+                </button>
+            </div>
+
+            <!-- Arcade High Score Homework Certificate Card -->
+            <div id="proofCard" class="bg-slate-950 rounded-2xl p-6 sm:p-8 border-4 border-pacman-yellow text-white relative shadow-[0_0_25px_rgba(255,230,0,0.4)]">
+                <div class="space-y-5">
+                    <!-- Certificate Header -->
+                    <div class="flex justify-between items-start border-b-4 border-pacman-neonBlue pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-black border-2 border-pacman-yellow rounded-xl flex items-center justify-center text-2xl shadow-[0_0_10px_#FFE600]">
+                                👾
+                            </div>
+                            <div>
+                                <h3 class="font-arcade text-xs sm:text-sm text-pacman-yellow uppercase">
+                                    PAC-MAN HOMEWORK PROOF
+                                </h3>
+                                <p class="text-xs text-slate-300 font-bold">Subject: English Grammar & Spelling Arcade</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-3 py-1 bg-emerald-950 text-emerald-300 border-2 border-emerald-400 rounded-lg text-[10px] font-arcade">
+                                VERIFIED
+                            </span>
+                            <div id="proofTimestamp" class="text-[10px] text-slate-400 mt-1 font-mono font-bold">Date: -</div>
+                        </div>
+                    </div>
+
+                    <!-- Student Info Box -->
+                    <div class="bg-black/80 p-4 border-2 border-pacman-neonBlue rounded-xl flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span id="proofAvatar" class="text-3xl bg-slate-900 p-2 border-2 border-pacman-yellow rounded-xl">🟡</span>
+                            <div>
+                                <div class="text-[9px] font-arcade text-pacman-neonBlue uppercase">PLAYER NAME</div>
+                                <div id="proofStudentName" class="font-bold text-pacman-yellow text-base sm:text-lg">-</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-arcade text-pacman-neonBlue uppercase">CLASS / SERVER</div>
+                            <div id="proofStudentClass" class="font-bold text-white text-base sm:text-lg">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Stage Difficulty Breakdown -->
+                    <div class="space-y-2">
+                        <h4 class="font-arcade text-[10px] text-slate-300 uppercase">Stage Breakdown:</h4>
+                        <div class="grid grid-cols-3 gap-2 text-center font-semibold">
+                            <div class="p-2.5 bg-black border-2 border-emerald-400 rounded-xl">
+                                <div class="text-[9px] text-emerald-400 font-arcade uppercase">Stage 1 (7)</div>
+                                <div id="easyScoreBreakdown" class="text-xs sm:text-sm font-bold text-white">0 / 7</div>
+                            </div>
+                            <div class="p-2.5 bg-black border-2 border-pacman-clydeOrange rounded-xl">
+                                <div class="text-[9px] text-pacman-clydeOrange font-arcade uppercase">Stage 2 (7)</div>
+                                <div id="mediumScoreBreakdown" class="text-xs sm:text-sm font-bold text-white">0 / 7</div>
+                            </div>
+                            <div class="p-2.5 bg-black border-2 border-pacman-blinkyRed rounded-xl">
+                                <div class="text-[9px] text-pacman-blinkyRed font-arcade uppercase">Stage 3 (6)</div>
+                                <div id="hardScoreBreakdown" class="text-xs sm:text-sm font-bold text-white">0 / 6</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Score Banner -->
+                    <div class="bg-black/90 p-5 text-center border-3 border-pacman-yellow rounded-2xl relative shadow-[0_0_15px_rgba(255,230,0,0.2)]">
+                        <div class="font-arcade text-[10px] text-pacman-yellow uppercase">TOTAL PAC DOT EXP</div>
+                        <div class="flex justify-center items-baseline gap-2 my-1">
+                            <span id="proofTotalScore" class="font-arcade text-3xl sm:text-4xl text-pacman-yellow">0</span>
+                            <span class="text-xl text-slate-400 font-arcade">/ 20</span>
+                        </div>
+                        <div id="proofPercentage" class="text-xs font-bold text-pacman-neonBlue">Accuracy: 0%</div>
+                        <div id="proofGradeBadge" class="inline-block mt-2 px-3.5 py-1 bg-pacman-yellow text-black text-[10px] font-arcade border-2 border-white rounded-lg">
+                            Grade: -
+                        </div>
+                    </div>
+
+                    <!-- Verification Footer -->
+                    <div class="pt-3 border-t-2 border-slate-700 flex justify-between items-end text-xs text-slate-300">
+                        <div>
+                            <p class="font-bold text-slate-200">Teacher Signature / Verification:</p>
+                            <div class="h-8 border-b-2 border-dashed border-slate-600 w-48 mt-1"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-mono text-[10px] text-pacman-neonBlue font-bold" id="proofID">ID: #PAC-0000</div>
+                            <p class="text-[9px] text-slate-400">Take a screenshot of this view as proof for homework submission.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD / HALL OF FAME VIEW -->
+        <section id="leaderboardView" class="hidden arcade-card p-5 sm:p-7 space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b-2 border-slate-700 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-black text-pacman-yellow flex items-center justify-center font-bold text-lg border-2 border-pacman-yellow rounded-xl shadow-[0_0_8px_#FFE600]">
+                        🏆
+                    </div>
+                    <div>
+                        <h2 class="font-arcade text-xs sm:text-sm text-pacman-yellow">Pac-Man High Scores</h2>
+                        <p class="text-xs text-slate-300 font-semibold">All arcade players who completed the maze.</p>
+                    </div>
+                </div>
+                <button onclick="closeLeaderboard()" class="arcade-btn px-3.5 py-2 bg-rose-500 text-black text-[10px]">
+                    Close
+                </button>
+            </div>
+
+            <!-- Search & Protected Reset Button -->
+            <div class="flex gap-2">
+                <input type="text" id="scoreboardSearch" oninput="filterScoreboard()" placeholder="Search player or class..." class="w-full px-3.5 py-2 bg-black text-white text-xs border-2 border-pacman-neonBlue rounded-xl font-semibold outline-none focus:ring-2 focus:ring-pacman-yellow">
+                <button onclick="openResetModal()" class="arcade-btn px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] flex-shrink-0">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Reset
+                </button>
+            </div>
+
+            <!-- RESET PIN MODAL (PASSCODE: 0016) -->
+            <div id="resetPinModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="arcade-card p-6 max-w-sm w-full text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-950 text-rose-400 flex items-center justify-center text-xl mx-auto border-2 border-rose-500 rounded-2xl">
+                        🔒
+                    </div>
+                    <div>
+                        <h3 class="font-arcade text-xs text-pacman-yellow">Teacher Passcode</h3>
+                        <p class="text-xs text-slate-300 font-semibold mt-1">Enter 4-digit passcode to reset high score database:</p>
+                    </div>
+                    <div>
+                        <input type="password" id="resetPinInput" maxlength="4" placeholder="••••" class="w-36 text-center text-2xl tracking-widest px-3 py-2 bg-black text-pacman-yellow border-2 border-pacman-yellow rounded-xl font-mono outline-none">
+                        <p id="resetPinError" class="hidden text-xs text-rose-400 font-bold mt-2">❌ Invalid Passcode!</p>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="closeResetModal()" class="arcade-btn w-1/2 py-2.5 bg-slate-800 text-white text-[10px]">
+                            Cancel
+                        </button>
+                        <button onclick="submitResetScoreboard()" class="arcade-btn w-1/2 py-2.5 bg-rose-600 text-white text-[10px]">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoreboard Table -->
+            <div class="overflow-x-auto border-2 border-pacman-neonBlue rounded-xl bg-black">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 border-b-2 border-pacman-neonBlue text-pacman-yellow font-arcade text-[10px]">
+                        <tr>
+                            <th class="p-3 text-center">Rank</th>
+                            <th class="p-3">Player</th>
+                            <th class="p-3">Class</th>
+                            <th class="p-3 text-center">Score</th>
+                            <th class="p-3 text-center">Accuracy</th>
+                            <th class="p-3 text-right">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreboardBody" class="divide-y divide-slate-800 font-semibold text-slate-200">
+                        <tr>
+                            <td colspan="6" class="p-6 text-center text-slate-500">Loading high score maze...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 text-[10px] text-slate-400 no-print border-t-2 border-pacman-neonBlue bg-black/90 font-arcade">
+        <p>© 2026 Pac-Man English Maze • Arcade Study & Quiz Edition</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Intercept unhandled storage/iframe promise rejections gracefully
+        window.addEventListener('unhandledrejection', (event) => {
+            if (event.reason && (
+                event.reason.name === 'UnknownError' ||
+                (event.reason.message && (
+                    event.reason.message.includes('Database deleted') ||
+                    event.reason.message.includes('IndexedDB') ||
+                    event.reason.message.includes('firestore')
+                ))
+            )) {
+                console.warn("Handled background storage rejection gracefully:", event.reason);
+                event.preventDefault();
+            }
+        });
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pacman-english-quiz';
+        let firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForAppCheckSampleOnly",
+            authDomain: "demo-project.firebaseapp.com",
+            projectId: "demo-project",
+            storageBucket: "demo-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+        
+        let isRealFirebase = false;
+        if (typeof __firebase_config !== 'undefined') {
+            try {
+                const parsed = JSON.parse(__firebase_config);
+                if (parsed && parsed.apiKey && !parsed.apiKey.includes('Dummy')) {
+                    firebaseConfig = parsed;
+                    isRealFirebase = true;
+                }
+            } catch (e) {
+                console.warn("Using fallback firebase config context");
+            }
+        }
+
+        let db = null;
+        let scoresCollection = null;
+        let currentUser = null;
+
+        if (isRealFirebase) {
+            try {
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                db = getFirestore(app);
+                scoresCollection = collection(db, 'artifacts', appId, 'public', 'data', 'pacman_english_quiz_scores');
+                initAuth(auth);
+            } catch (err) {
+                console.warn("Firebase init failed, using local storage mode:", err);
+                loadLocalScoreboard();
+            }
+        } else {
+            loadLocalScoreboard();
+        }
+
+        async function initAuth(auth) {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = userCred.user;
+                } else {
+                    const userCred = await signInAnonymously(auth);
+                    currentUser = userCred.user;
+                }
+                listenToScoreboard();
+            } catch (err) {
+                console.warn("Firestore Auth fallback to local mode:", err);
+                loadLocalScoreboard();
+            }
+        }
+
+        function loadLocalScoreboard() {
+            const localScores = JSON.parse(localStorage.getItem('pacman_english_quiz_local_scores') || '[]');
+            localScores.sort((a, b) => b.totalScore - a.totalScore);
+            rawScoreboardData = localScores;
+            if (window.renderScoreboardTable) {
+                window.renderScoreboardTable(rawScoreboardData);
+            }
+        }
+
+        window.saveStudentScoreToCloud = async function(scoreRecord) {
+            const localScores = JSON.parse(localStorage.getItem('pacman_english_quiz_local_scores') || '[]');
+            localScores.push(scoreRecord);
+            localStorage.setItem('pacman_english_quiz_local_scores', JSON.stringify(localScores));
+
+            if (!currentUser || !scoresCollection || !isRealFirebase) {
+                loadLocalScoreboard();
+                return;
+            }
+
+            try {
+                await addDoc(scoresCollection, {
+                    ...scoreRecord,
+                    createdAt: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Error saving score to Firestore:", e);
+                loadLocalScoreboard();
+            }
+        };
+
+        let rawScoreboardData = [];
+        function listenToScoreboard() {
+            if (!scoresCollection || !isRealFirebase) {
+                loadLocalScoreboard();
+                return;
+            }
+            try {
+                onSnapshot(scoresCollection, (snapshot) => {
+                    const cloudScores = [];
+                    snapshot.forEach(doc => cloudScores.push(doc.data()));
+                    
+                    const localScores = JSON.parse(localStorage.getItem('pacman_english_quiz_local_scores') || '[]');
+                    const combined = [...cloudScores, ...localScores];
+                    
+                    combined.sort((a, b) => b.totalScore - a.totalScore);
+
+                    const uniqueScores = [];
+                    const seen = new Set();
+                    for (const item of combined) {
+                        const key = `${item.studentName}-${item.studentClass}-${item.totalScore}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueScores.push(item);
+                        }
+                    }
+
+                    rawScoreboardData = uniqueScores;
+                    renderScoreboardTable(rawScoreboardData);
+                }, (error) => {
+                    console.warn("Firestore snapshot error, loading local scores:", error);
+                    loadLocalScoreboard();
+                });
+            } catch (err) {
+                console.warn("Firestore listener error:", err);
+                loadLocalScoreboard();
+            }
+        }
+
+        window.renderScoreboardTable = function(data) {
+            const tbody = document.getElementById('scoreboardBody');
+            if (!tbody) return;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold">No Pac-Man High Scores recorded yet. Be the first player!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map((item, index) => {
+                let rankBadge = `<span class="font-arcade text-[10px] text-slate-400 font-bold">${index + 1}</span>`;
+                if (index === 0) rankBadge = `<span class="inline-block px-2 py-0.5 bg-pacman-yellow text-black font-arcade text-[9px] border border-white rounded-md">1ST</span>`;
+                if (index === 1) rankBadge = `<span class="inline-block px-2 py-0.5 bg-slate-300 text-black font-arcade text-[9px] border border-white rounded-md">2ND</span>`;
+                if (index === 2) rankBadge = `<span class="inline-block px-2 py-0.5 bg-amber-600 text-white font-arcade text-[9px] border border-white rounded-md">3RD</span>`;
+
+                const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-GB') : '-';
+
+                return `
+                    <tr class="hover:bg-slate-900 transition">
+                        <td class="p-3 text-center">${rankBadge}</td>
+                        <td class="p-3 font-bold text-white flex items-center gap-2">
+                            <span>${item.avatar || '🟡'}</span>
+                            <span class="text-pacman-yellow">${escapeHTML(item.studentName)}</span>
+                        </td>
+                        <td class="p-3 text-pacman-neonBlue font-bold">${escapeHTML(item.studentClass)}</td>
+                        <td class="p-3 text-center font-bold text-pacman-yellow">${item.totalScore}/20</td>
+                        <td class="p-3 text-center font-bold text-emerald-400">${item.percentage}%</td>
+                        <td class="p-3 text-right text-slate-400 text-[10px] font-mono font-bold">${dateStr}</td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.filterScoreboard = function() {
+            const query = (document.getElementById('scoreboardSearch')?.value || '').toLowerCase();
+            const filtered = rawScoreboardData.filter(item => 
+                item.studentName.toLowerCase().includes(query) || 
+                item.studentClass.toLowerCase().includes(query)
+            );
+            renderScoreboardTable(filtered);
+        };
+
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+    </script>
+
+    <script>
+        // 20 QUESTIONS BANK ACROSS 3 PAC-MAN MAZE STAGES
+        const quizQuestions = [
+            // --- STAGE 1: FRUIT MAZE (Easy Tier - 7 Questions) ---
+            {
+                id: 1,
+                level: "Easy",
+                category: "Grammar",
+                question: "She ___ to school every day by bus.",
+                options: ["walks", "walk", "walking", "walked"],
+                correct: 0,
+                explanation: "'She' ialah subjek tunggal (singular) dalam Simple Present Tense, maka kata kerja memerlukan penambahan 's' (walks)."
+            },
+            {
+                id: 2,
+                level: "Easy",
+                category: "Spelling",
+                question: "Choose the CORRECT spelling:",
+                options: ["Beautiful", "Beautifull", "Beutiful", "Beauteful"],
+                correct: 0,
+                explanation: "Ejaan yang betul ialah 'Beautiful' (B-E-A-U-T-I-F-U-L)."
+            },
+            {
+                id: 3,
+                level: "Easy",
+                category: "Grammar",
+                question: "I bought ___ apple and a banana from the market.",
+                options: ["a", "an", "the", "two"],
+                correct: 1,
+                explanation: "Perkataan 'Apple' bermula dengan bunyi vokal 'a', jadi kita gunakan kata artikel 'an'."
+            },
+            {
+                id: 4,
+                level: "Easy",
+                category: "Spelling",
+                question: "Which of the following is spelled CORRECTLY?",
+                options: ["Friend", "Freind", "Frend", "Friand"],
+                correct: 0,
+                explanation: "Ingat aturan ejaan: 'i' sebelum 'e' kecuali selepas huruf 'c' -> 'Friend'."
+            },
+            {
+                id: 5,
+                level: "Easy",
+                category: "Grammar",
+                question: "The cat is sleeping ___ the chair.",
+                options: ["under", "between", "into", "at"],
+                correct: 0,
+                explanation: "'Under' ialah kata arah (preposition) yang betul bagi kedudukan di bawah kerusi."
+            },
+            {
+                id: 6,
+                level: "Easy",
+                category: "Spelling",
+                question: "Which word is spelled INCORRECTLY?",
+                options: ["Happy", "Doctor", "Animall", "Teacher"],
+                correct: 2,
+                explanation: "'Animall' adalah salah. Ejaan sebenar ialah 'Animal' dengan satu huruf 'l' sahaja."
+            },
+            {
+                id: 7,
+                level: "Easy",
+                category: "Grammar",
+                question: "They ___ playing football in the field right now.",
+                options: ["is", "am", "are", "was"],
+                correct: 2,
+                explanation: "Subjek 'They' adalah jamak (plural), maka ia memerlukan kata kerja 'are' bagi Present Continuous Tense."
+            },
+
+            // --- STAGE 2: GHOST TUNNEL (Medium Tier - 7 Questions) ---
+            {
+                id: 8,
+                level: "Medium",
+                category: "Grammar",
+                question: "Neither Ali nor his friends ___ attending the seminar today.",
+                options: ["is", "are", "was", "has"],
+                correct: 1,
+                explanation: "Bagi struktur 'neither... nor', kata kerja mengikut subjek yang paling dekat dengannya ('his friends' = jamak -> are)."
+            },
+            {
+                id: 9,
+                level: "Medium",
+                category: "Spelling",
+                question: "Select the word with the CORRECT spelling:",
+                options: ["Necessary", "Neccessary", "Necesary", "Neccesary"],
+                correct: 0,
+                explanation: "'Necessary' mengandungi 1 huruf 'c' dan 2 huruf 's' (Petua: 1 Collar, 2 Sleeves)."
+            },
+            {
+                id: 10,
+                level: "Medium",
+                category: "Grammar",
+                question: "If it rains tomorrow, we ___ cancel the outdoor picnic.",
+                options: ["will", "would", "would have", "had"],
+                correct: 0,
+                explanation: "Struktur Conditional Type 1: Jika klausa 'if' guna Simple Present (rains), klausa utama menggunakan 'will' + kata kerja asas."
+            },
+            {
+                id: 11,
+                level: "Medium",
+                category: "Spelling",
+                question: "Which option shows the CORRECT spelling?",
+                options: ["Receive", "Recieve", "Receve", "Receeve"],
+                correct: 0,
+                explanation: "'Receive' mengikut aturan ejaan 'e' sebelum 'i' SELEPAS huruf 'c'."
+            },
+            {
+                id: 12,
+                level: "Medium",
+                category: "Grammar",
+                question: "Sarah is the ___ girl in our entire school.",
+                options: ["smart", "smarter", "smartest", "most smartest"],
+                correct: 2,
+                explanation: "Bandingan Superlative untuk membandingkan Sarah dengan seluruh sekolah menggunakan 'smartest'."
+            },
+            {
+                id: 13,
+                level: "Medium",
+                category: "Spelling",
+                question: "Identify the INCORRECTLY spelled word:",
+                options: ["Accommodate", "Embarrass", "Seperate", "Occurred"],
+                correct: 2,
+                explanation: "'Seperate' adalah salah. Ejaan betul ialah 'Separate' (mempunyai 'a rat' di tengah-tengah: sepARATe)."
+            },
+            {
+                id: 14,
+                level: "Medium",
+                category: "Grammar",
+                question: "The students haven't completed their homework ___.",
+                options: ["already", "yet", "still", "never"],
+                correct: 1,
+                explanation: "Perkataan 'Yet' digunakan di hujung ayat negatif bagi Present Perfect Tense."
+            },
+
+            // --- STAGE 3: BOSS MAZE (Hard Tier - 6 Questions) ---
+            {
+                id: 15,
+                level: "Hard",
+                category: "Grammar",
+                question: "Hardly had I stepped outside the house ___ it started to pour.",
+                options: ["when", "than", "then", "after"],
+                correct: 0,
+                explanation: "Frasa terbalik 'Hardly had...' sentiasa berpasangan dengan kata 'when'."
+            },
+            {
+                id: 16,
+                level: "Hard",
+                category: "Spelling",
+                question: "Which word is spelled CORRECTLY?",
+                options: ["Maintenance", "Maintainance", "Maintenence", "Mentenance"],
+                correct: 0,
+                explanation: "Walaupun kata kerjanya ialah 'maintain', bentuk kata namanya dieja 'Maintenance'."
+            },
+            {
+                id: 17,
+                level: "Hard",
+                category: "Grammar",
+                question: "By this time next year, Dr. Imran ___ his medical research.",
+                options: ["completes", "will complete", "will have completed", "had completed"],
+                correct: 2,
+                explanation: "Frasa 'By this time next year' menunjukkan Future Perfect Tense (will have completed)."
+            },
+            {
+                id: 18,
+                level: "Hard",
+                category: "Spelling",
+                question: "Select the CORRECT spelling for the word meaning 'miscellaneous':",
+                options: ["Miscellaneous", "Miscelaneous", "Miscellanous", "Miscellainous"],
+                correct: 0,
+                explanation: "Ejaan yang betul ialah 'Miscellaneous' (M-I-S-C-E-L-L-A-N-E-O-U-S)."
+            },
+            {
+                id: 19,
+                level: "Hard",
+                category: "Grammar",
+                question: "You should avoid ___ the same mistake during the final examination.",
+                options: ["to make", "making", "make", "made"],
+                correct: 1,
+                explanation: "Kata kerja 'avoid' mestilah diikuti oleh bentuk gerund (-ing form), iaitu 'making'."
+            },
+            {
+                id: 20,
+                level: "Hard",
+                category: "Spelling",
+                question: "Which word is spelled INCORRECTLY?",
+                options: ["Privilege", "Questionnaire", "Conscientious", "Perserverance"],
+                correct: 3,
+                explanation: "'Perserverance' adalah salah. Ejaan tepat ialah 'Perseverance' (P-E-R-S-E-V-E-R-A-N-C-E)."
+            }
+        ];
+
+        const avatars = ["🟡", "🔴", "🩷", "🩵", "🟠", "🍒", "🍓", "👻", "👾", "🕹️"];
+        let selectedAvatar = "🟡";
+        
+        // PAC-MAN STUDY SLIDES WITH DIAGRAMS
+        const studySlides = [
+            {
+                title: "1. Subject-Verb Agreement & Article Dots",
+                content: `
+                    <div class="space-y-4 text-slate-200 text-xs sm:text-sm">
+                        <!-- Pac-Man Visual Diagram 1 -->
+                        <div class="p-3 bg-black border-2 border-pacman-neonBlue rounded-xl flex flex-col md:flex-row items-center gap-4 shadow-[0_0_10px_rgba(0,216,255,0.2)]">
+                            <div class="w-full md:w-1/2 flex justify-center">
+                                <svg class="w-full max-w-[260px] h-auto drop-shadow" viewBox="0 0 300 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="300" height="130" fill="#0A0A16" rx="12" stroke="#00D8FF" stroke-width="2"/>
+                                    <!-- Singular Pac Box -->
+                                    <rect x="15" y="15" width="125" height="100" fill="#12122C" rx="8" stroke="#FFE600" stroke-width="2"/>
+                                    <text x="77" y="38" text-anchor="middle" fill="#FFE600" font-family="'Press Start 2P'" font-size="9">SINGULAR</text>
+                                    <text x="77" y="58" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="bold">She / He / It</text>
+                                    <rect x="25" y="75" width="105" height="26" fill="#FFE600" rx="6"/>
+                                    <text x="77" y="92" text-anchor="middle" fill="#000000" font-family="'Press Start 2P'" font-size="8">Add "+s/+es"</text>
+                                    
+                                    <!-- Plural Ghost Box -->
+                                    <rect x="160" y="15" width="125" height="100" fill="#12122C" rx="8" stroke="#00D8FF" stroke-width="2"/>
+                                    <text x="222" y="38" text-anchor="middle" fill="#00D8FF" font-family="'Press Start 2P'" font-size="9">PLURAL</text>
+                                    <text x="222" y="58" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="bold">They / We / You</text>
+                                    <rect x="170" y="75" width="105" height="26" fill="#00D8FF" rx="6"/>
+                                    <text x="222" y="92" text-anchor="middle" fill="#000000" font-family="'Press Start 2P'" font-size="8">Base Verb</text>
+                                </svg>
+                            </div>
+                            <div class="w-full md:w-1/2 space-y-2">
+                                <h4 class="font-arcade text-pacman-yellow text-[11px]">📌 Rule 1: Subject-Verb Agreement</h4>
+                                <p class="text-slate-300 leading-relaxed text-[11px] font-semibold">
+                                    Subjek <strong>Singular</strong> (She/He/It) memerlukan kata kerja bertambah <strong>'s'</strong>. Subjek <strong>Plural</strong> (They/We/You) kekal kata kerja asal.
+                                </p>
+                                <div class="p-2 bg-slate-900 border border-pacman-yellow rounded-lg text-[11px] text-pacman-yellow font-bold">
+                                    <strong>Contoh:</strong> She <span class="underline text-emerald-400">walks</span>. / They <span class="underline text-pacman-neonBlue">walk</span>.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pac-Man Visual Diagram 2 -->
+                        <div class="p-3 bg-black border-2 border-pacman-pinkyPink rounded-xl flex flex-col md:flex-row items-center gap-4">
+                            <div class="w-full md:w-1/2 space-y-2">
+                                <h4 class="font-arcade text-pacman-pinkyPink text-[11px]">📌 Rule 2: Article Items "A" vs "AN"</h4>
+                                <p class="text-slate-300 leading-relaxed text-[11px] font-semibold">
+                                    Gunakan kata artikel <strong>"AN"</strong> hanya di hadapan kata nama yang bermula dengan sebutan <strong>bunyi vokal (A, E, I, O, U)</strong>.
+                                </p>
+                                <div class="p-2 bg-slate-900 border border-pacman-pinkyPink rounded-lg text-[11px] text-pacman-pinkyPink font-bold">
+                                    <strong>Contoh:</strong> <span class="text-pacman-yellow">An</span> apple 🍎, <span class="text-pacman-yellow">An</span> hour ⌛.
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/2 flex justify-center">
+                                <svg class="w-full max-w-[260px] h-auto drop-shadow" viewBox="0 0 300 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="300" height="110" fill="#0A0A16" rx="12" stroke="#FFB8FF" stroke-width="2"/>
+                                    <!-- A Box -->
+                                    <rect x="20" y="20" width="120" height="70" fill="#12122C" rx="8" stroke="#00D8FF" stroke-width="2"/>
+                                    <text x="80" y="48" text-anchor="middle" fill="#00D8FF" font-family="'Press Start 2P'" font-size="14">A</text>
+                                    <text x="80" y="70" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="bold">Consonant Sounds</text>
+                                    
+                                    <!-- AN Box -->
+                                    <rect x="160" y="20" width="120" height="70" fill="#12122C" rx="8" stroke="#FFB8FF" stroke-width="2"/>
+                                    <text x="220" y="48" text-anchor="middle" fill="#FFB8FF" font-family="'Press Start 2P'" font-size="14">AN</text>
+                                    <text x="220" y="70" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="bold">Vowel Sounds</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "2. Pac-Spelling Rules & Power Tricks",
+                content: `
+                    <div class="space-y-4 text-slate-200 text-xs sm:text-sm">
+                        <div class="p-3 bg-black border-2 border-pacman-yellow rounded-xl flex flex-col md:flex-row items-center gap-4">
+                            <div class="w-full md:w-1/2 flex justify-center">
+                                <svg class="w-full max-w-[260px] h-auto drop-shadow" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="300" height="120" fill="#0A0A16" rx="12" stroke="#FFE600" stroke-width="2"/>
+                                    <rect x="15" y="15" width="270" height="90" fill="#12122C" rx="8" stroke="#FFE600" stroke-width="2"/>
+                                    <text x="150" y="40" text-anchor="middle" fill="#FFE600" font-family="'Press Start 2P'" font-size="9">"I" BEFORE "E"</text>
+                                    <text x="150" y="60" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="bold">Except after the letter "C"</text>
+                                    
+                                    <rect x="35" y="72" width="100" height="24" fill="#00D8FF" rx="6"/>
+                                    <text x="85" y="88" text-anchor="middle" fill="#000000" font-family="'Press Start 2P'" font-size="8">Fr I E nd</text>
+
+                                    <rect x="165" y="72" width="100" height="24" fill="#FFB8FF" rx="6"/>
+                                    <text x="215" y="88" text-anchor="middle" fill="#000000" font-family="'Press Start 2P'" font-size="8">Re C E I ve</text>
+                                </svg>
+                            </div>
+                            <div class="w-full md:w-1/2 space-y-2">
+                                <h4 class="font-arcade text-pacman-yellow text-[11px]">📌 Petua Ejaan: "I" sebelum "E"</h4>
+                                <p class="text-slate-300 leading-relaxed text-[11px] font-semibold">
+                                    Gunakan susunan huruf <strong>'ie'</strong> untuk kebanyakan perkataan. Namun jika didahului oleh huruf <strong>'C'</strong>, tukarkan kepada <strong>'ei'</strong>.
+                                </p>
+                                <div class="p-2 bg-slate-900 border border-pacman-yellow rounded-lg text-[11px] text-white font-bold">
+                                    <strong>Contoh:</strong> Fr<span class="underline text-pacman-yellow">ie</span>nd VS Re<span class="underline text-pacman-pinkyPink">cei</span>ve.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mnemonic Trick Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-semibold">
+                            <div class="p-3 bg-black border-2 border-pacman-clydeOrange rounded-xl flex items-center gap-3">
+                                <span class="text-2xl">👕</span>
+                                <div>
+                                    <div class="font-arcade text-[10px] text-pacman-clydeOrange">NECESSARY</div>
+                                    <div class="text-[11px] text-slate-300">1 <b>C</b>ollar, 2 <b>S</b>leeves (1 'c', 2 's').</div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-black border-2 border-emerald-400 rounded-xl flex items-center gap-3">
+                                <span class="text-2xl">🐀</span>
+                                <div>
+                                    <div class="font-arcade text-[10px] text-emerald-400">SEPARATE</div>
+                                    <div class="text-[11px] text-slate-300">Ada '<b>A RAT</b>' di tengah: sep<b>ARAT</b>e.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "3. Boss Maze Grammar Rules",
+                content: `
+                    <div class="space-y-4 text-slate-200 text-xs sm:text-sm">
+                        <div class="p-3 bg-black border-2 border-pacman-blinkyRed rounded-xl flex flex-col md:flex-row items-center gap-4">
+                            <div class="w-full md:w-1/2 flex justify-center">
+                                <svg class="w-full max-w-[260px] h-auto drop-shadow" viewBox="0 0 300 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="300" height="130" fill="#0A0A16" rx="12" stroke="#FF0000" stroke-width="2"/>
+                                    <!-- Neither/Nor Box -->
+                                    <rect x="15" y="15" width="270" height="45" fill="#12122C" rx="8" stroke="#FFE600" stroke-width="1.5"/>
+                                    <text x="150" y="32" text-anchor="middle" fill="#FFE600" font-family="'Press Start 2P'" font-size="8">Neither A nor B + Verb</text>
+                                    <text x="150" y="48" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="bold">Kata kerja mengikut subjek B (terdekat)</text>
+
+                                    <!-- Inversion Box -->
+                                    <rect x="15" y="70" width="270" height="45" fill="#12122C" rx="8" stroke="#FF0000" stroke-width="1.5"/>
+                                    <text x="150" y="87" text-anchor="middle" fill="#FF0000" font-family="'Press Start 2P'" font-size="8">Hardly had... WHEN...</text>
+                                    <text x="150" y="103" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="bold">Pasangan terbalik sentiasa gunakan 'WHEN'</text>
+                                </svg>
+                            </div>
+                            <div class="w-full md:w-1/2 space-y-2">
+                                <h4 class="font-arcade text-pacman-blinkyRed text-[11px]">📌 Peraturan Khas Grammar</h4>
+                                <p class="text-slate-300 leading-relaxed text-[11px] font-semibold">
+                                    1. <strong>Neither... Nor:</strong> Kata kerja sentiasa akur dengan subjek kedua (terdekat).
+                                    <br>
+                                    2. <strong>Hardly had...:</strong> Ayat bermula frasa ini sentiasa diikuti oleh perkataan <strong>'when'</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-900 border-2 border-pacman-yellow rounded-xl text-[11px] text-pacman-yellow font-bold">
+                            <strong>💡 Pac-Man Arcade Tip:</strong> Perkataan <strong>'Avoid'</strong> mestilah sentiasa diikuti oleh kata kerja bentuk <i>-ing</i> (Gerund).
+                            <br><span class="italic text-pacman-neonBlue">Contoh: You should avoid <u>making</u> mistakes.</span>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentSlideIdx = 0;
+        let slideTimerInterval = null;
+        let slideSecondsLeft = 10;
+
+        // Game State Variables
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let streak = 0;
+        let userAnswers = [];
+        let startTime = 0;
+        let endTime = 0;
+        let studentInfo = { name: "", class: "" };
+        let soundEnabled = true;
+
+        // Web Audio Context Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Synthesized Retro Web Audio BGM Generator
+        let bgmEnabled = false;
+        let bgmInterval = null;
+        let bgmNoteIndex = 0;
+
+        // Iconic Pac-Man synth note frequencies
+        const bgmNotes = [
+            493.88, 987.77, 739.99, 622.25, 987.77, 739.99, 622.25,
+            523.25, 1046.50, 783.99, 659.25, 1046.50, 783.99, 659.25,
+            493.88, 987.77, 739.99, 622.25, 987.77, 739.99, 622.25
+        ];
+
+        function playBGMNote() {
+            if (!bgmEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(bgmNotes[bgmNoteIndex], audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.12);
+
+                bgmNoteIndex = (bgmNoteIndex + 1) % bgmNotes.length;
+            } catch (e) {
+                console.warn("BGM synth audio error:", e);
+            }
+        }
+
+        window.toggleBGM = function() {
+            bgmEnabled = !bgmEnabled;
+            const icon = document.getElementById('bgmIcon');
+            const text = document.getElementById('bgmText');
+            
+            if (bgmEnabled) {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                icon.className = 'fa-solid fa-music text-pacman-yellow animate-bounce';
+                text.innerText = 'BGM: ON';
+                clearInterval(bgmInterval);
+                bgmInterval = setInterval(playBGMNote, 160);
+            } else {
+                icon.className = 'fa-solid fa-music text-purple-400';
+                text.innerText = 'BGM: OFF';
+                clearInterval(bgmInterval);
+            }
+        };
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    // Waka-Waka Arcade Sound
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                } else if (type === 'wrong') {
+                    // Ghost Hit Buzz Sound
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else if (type === 'complete') {
+                    // Arcade Victory Chime
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'triangle';
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.18, audioCtx.currentTime + i * 0.1);
+                        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.25);
+                        o.start(audioCtx.currentTime + i * 0.1);
+                        o.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio exception", e);
+            }
+        }
+
+        window.toggleSound = function() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            const text = document.getElementById('soundText');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-pacman-neonBlue';
+                text.innerText = 'SFX: ON';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+                text.innerText = 'SFX: OFF';
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAvatars();
+        });
+
+        function renderAvatars() {
+            const container = document.getElementById('avatarSelector');
+            if (!container) return;
+            container.innerHTML = avatars.map((av, i) => `
+                <button type="button" onclick="selectAvatar('${av}', this)" class="avatar-option p-2 text-2xl bg-black border-2 ${i === 0 ? 'border-pacman-yellow shadow-[0_0_8px_#FFE600]' : 'border-slate-800'} rounded-xl hover:border-pacman-yellow transition text-center">
+                    ${av}
+                </button>
+            `).join('');
+        }
+
+        window.selectAvatar = function(avatar, btn) {
+            selectedAvatar = avatar;
+            document.querySelectorAll('.avatar-option').forEach(b => {
+                b.classList.remove('border-pacman-yellow', 'shadow-[0_0_8px_#FFE600]');
+                b.classList.add('border-slate-800');
+            });
+            btn.classList.add('border-pacman-yellow', 'shadow-[0_0_8px_#FFE600]');
+        };
+
+        window.handleStartGame = function(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('studentName').value.trim();
+            const classInput = document.getElementById('studentClass').value.trim();
+
+            if (!nameInput || !classInput) return;
+
+            studentInfo.name = nameInput;
+            studentInfo.class = classInput;
+
+            currentQuestionIdx = 0;
+            score = 0;
+            streak = 0;
+            userAnswers = [];
+            currentSlideIdx = 0;
+
+            document.getElementById('playerNameDisplay').innerText = studentInfo.name;
+            document.getElementById('playerClassDisplay').innerText = studentInfo.class;
+            document.getElementById('playerAvatarDisplay').innerText = selectedAvatar;
+
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('slidesView').classList.remove('hidden');
+
+            // Optionally start background music if enabled
+            if (bgmEnabled && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            renderSlide();
+        };
+
+        function renderSlide() {
+            clearInterval(slideTimerInterval);
+            slideSecondsLeft = 10;
+
+            const slide = studySlides[currentSlideIdx];
+            document.getElementById('slideIndicator').innerText = `Slide ${currentSlideIdx + 1}/3`;
+
+            const contentBox = document.getElementById('slideContentBox');
+            contentBox.innerHTML = `
+                <h3 class="font-arcade text-xs sm:text-sm text-pacman-yellow border-b-2 border-slate-800 pb-2 mb-3">
+                    ${slide.title}
+                </h3>
+                ${slide.content}
+            `;
+
+            const nextBtn = document.getElementById('nextSlideBtn');
+            const nextBtnText = document.getElementById('nextSlideBtnText');
+            const lockIcon = document.getElementById('slideLockIcon');
+            const lockText = document.getElementById('slideLockText');
+
+            nextBtn.disabled = true;
+            lockIcon.className = "fa-solid fa-lock text-rose-400";
+            lockText.innerText = "Next button locked until timer completes 10s.";
+            document.getElementById('slideTimerCount').innerText = slideSecondsLeft;
+
+            slideTimerInterval = setInterval(() => {
+                slideSecondsLeft--;
+                document.getElementById('slideTimerCount').innerText = slideSecondsLeft;
+
+                if (slideSecondsLeft > 0) {
+                    nextBtnText.innerText = `Wait (${slideSecondsLeft}s)...`;
+                } else {
+                    clearInterval(slideTimerInterval);
+                    nextBtn.disabled = false;
+                    lockIcon.className = "fa-solid fa-lock-open text-emerald-400";
+                    lockText.innerText = "Timer clear! You may advance to the next slide.";
+
+                    if (currentSlideIdx === studySlides.length - 1) {
+                        nextBtnText.innerText = "Start Quiz Maze!";
+                    } else {
+                        nextBtnText.innerText = "Next Slide";
+                    }
+                }
+            }, 1000);
+        }
+
+        window.nextSlide = function() {
+            if (currentSlideIdx < studySlides.length - 1) {
+                currentSlideIdx++;
+                renderSlide();
+            } else {
+                clearInterval(slideTimerInterval);
+                startTime = Date.now();
+                document.getElementById('slidesView').classList.add('hidden');
+                document.getElementById('quizView').classList.remove('hidden');
+                renderCurrentQuestion();
+            }
+        };
+
+        function renderCurrentQuestion() {
+            const q = quizQuestions[currentQuestionIdx];
+            
+            const progressPercent = ((currentQuestionIdx) / quizQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            document.getElementById('questionNumText').innerText = `Dot ${currentQuestionIdx + 1}/20`;
+            document.getElementById('questionText').innerText = q.question;
+            document.getElementById('liveScore').innerText = score;
+
+            const catBadge = document.getElementById('categoryBadge');
+            catBadge.innerHTML = q.category === 'Grammar' 
+                ? `<i class="fa-solid fa-book text-pacman-neonBlue"></i> Grammar` 
+                : `<i class="fa-solid fa-spell-check text-pacman-pinkyPink"></i> Spelling`;
+
+            const levelBadge = document.getElementById('levelBadge');
+            if (q.level === 'Easy') {
+                levelBadge.className = "px-3 py-1 text-[10px] font-arcade bg-emerald-950 text-emerald-300 border-2 border-emerald-400 rounded-lg";
+                levelBadge.innerText = "Stage 1: Fruit Maze";
+            } else if (q.level === 'Medium') {
+                levelBadge.className = "px-3 py-1 text-[10px] font-arcade bg-yellow-950 text-pacman-yellow border-2 border-pacman-yellow rounded-lg";
+                levelBadge.innerText = "Stage 2: Ghost Tunnel";
+            } else {
+                levelBadge.className = "px-3 py-1 text-[10px] font-arcade bg-rose-950 text-pacman-blinkyRed border-2 border-pacman-blinkyRed rounded-lg";
+                levelBadge.innerText = "Stage 3: Boss Maze";
+            }
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => selectOption(idx);
+                btn.className = `arcade-btn option-btn w-full p-3.5 bg-black border-2 border-pacman-neonBlue hover:bg-slate-900 text-left font-bold text-white transition flex items-center justify-between text-xs sm:text-sm`;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 bg-slate-900 text-pacman-yellow font-arcade text-[10px] flex items-center justify-center flex-shrink-0 border border-pacman-yellow rounded-md">
+                            ${optionLetters[idx]}
+                        </span>
+                        <span>${opt}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-slate-600 opt-icon text-sm"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedbackBox').className = "hidden mt-4 p-4 border-2 rounded-xl flex items-start gap-3 transition-all duration-200";
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(selectedIndex) {
+            const q = quizQuestions[currentQuestionIdx];
+            const isCorrect = (selectedIndex === q.correct);
+
+            userAnswers.push({
+                questionId: q.id,
+                selected: selectedIndex,
+                isCorrect: isCorrect,
+                questionObj: q
+            });
+
+            const optionBtns = document.querySelectorAll('.option-btn');
+            optionBtns.forEach((btn, idx) => {
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.className = 'arcade-btn option-btn w-full p-3.5 bg-emerald-950 border-2 border-emerald-400 text-emerald-200 text-xs sm:text-sm font-bold flex items-center justify-between';
+                    btn.querySelector('.opt-icon').className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.className = 'arcade-btn option-btn w-full p-3.5 bg-rose-950 border-2 border-rose-500 text-rose-200 text-xs sm:text-sm font-bold flex items-center justify-between';
+                    btn.querySelector('.opt-icon').className = 'fa-solid fa-circle-xmark text-rose-400 text-sm';
+                }
+            });
+
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackExp = document.getElementById('feedbackExplanation');
+
+            feedbackBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                score += 1;
+                streak += 1;
+                playSound('correct');
+                feedbackBox.className = "mt-4 p-4 border-2 border-emerald-400 rounded-xl bg-emerald-950/80 text-emerald-200 flex items-start gap-3";
+                feedbackIcon.className = "fa-solid fa-circle-check text-xl mt-0.5 text-emerald-400";
+                feedbackTitle.innerText = streak > 2 ? `SUPER WAKA! ${streak} GHOST COMBO!` : "GHOST CLEARED!";
+                feedbackExp.innerText = q.explanation;
+            } else {
+                streak = 0;
+                playSound('wrong');
+                feedbackBox.className = "mt-4 p-4 border-2 border-rose-500 rounded-xl bg-rose-950/80 text-rose-200 flex items-start gap-3";
+                feedbackIcon.className = "fa-solid fa-circle-xmark text-xl mt-0.5 text-rose-400";
+                feedbackTitle.innerText = "GHOST HIT!";
+                feedbackExp.innerText = q.explanation;
+            }
+
+            const streakBadge = document.getElementById('streakBadge');
+            if (streak >= 2) {
+                streakBadge.classList.remove('hidden');
+                document.getElementById('streakCount').innerText = streak;
+            } else {
+                streakBadge.classList.add('hidden');
+            }
+
+            document.getElementById('liveScore').innerText = score;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        window.nextQuestion = function() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                renderCurrentQuestion();
+            } else {
+                finishQuiz();
+            }
+        };
+
+        function finishQuiz() {
+            endTime = Date.now();
+            playSound('complete');
+            
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            const totalScore = score;
+            const totalQuestions = quizQuestions.length;
+            const percentage = Math.round((totalScore / totalQuestions) * 100);
+            const durationSec = Math.round((endTime - startTime) / 1000);
+            const minutes = Math.floor(durationSec / 60);
+            const seconds = durationSec % 60;
+
+            let easyCorrect = 0, mediumCorrect = 0, hardCorrect = 0;
+            userAnswers.forEach(ans => {
+                if (ans.isCorrect) {
+                    if (ans.questionObj.level === 'Easy') easyCorrect++;
+                    if (ans.questionObj.level === 'Medium') mediumCorrect++;
+                    if (ans.questionObj.level === 'Hard') hardCorrect++;
+                }
+            });
+
+            let grade = "Pac Master";
+            if (percentage >= 85) grade = "Pac Master (S Tier)";
+            else if (percentage >= 70) grade = "Ghost Hunter (A Tier)";
+            else if (percentage >= 50) grade = "Arcade Runner (B Tier)";
+            else grade = "Maze Rookie (C Tier)";
+
+            document.getElementById('finalScoreDisplay').innerText = `${totalScore}/${totalQuestions}`;
+            document.getElementById('finalPercentDisplay').innerText = `${percentage}%`;
+            document.getElementById('finalGradeDisplay').innerText = grade;
+            document.getElementById('timeTakenDisplay').innerText = `${minutes}m ${seconds}s`;
+
+            document.getElementById('proofStudentName').innerText = studentInfo.name;
+            document.getElementById('proofStudentClass').innerText = studentInfo.class;
+            document.getElementById('proofAvatar').innerText = selectedAvatar;
+            document.getElementById('proofTotalScore').innerText = totalScore;
+            document.getElementById('proofPercentage').innerText = `Accuracy: ${percentage}%`;
+            document.getElementById('proofGradeBadge').innerText = `Grade: ${grade}`;
+            document.getElementById('proofTimestamp').innerText = `Date: ${new Date().toLocaleString('en-GB')}`;
+            document.getElementById('proofID').innerText = `ID: #PAC-${Date.now().toString().slice(-6)}`;
+
+            document.getElementById('easyScoreBreakdown').innerText = `${easyCorrect} / 7`;
+            document.getElementById('mediumScoreBreakdown').innerText = `${mediumCorrect} / 7`;
+            document.getElementById('hardScoreBreakdown').innerText = `${hardCorrect} / 6`;
+
+            const scoreRecord = {
+                studentName: studentInfo.name,
+                studentClass: studentInfo.class,
+                avatar: selectedAvatar,
+                totalScore: totalScore,
+                percentage: percentage,
+                easyScore: easyCorrect,
+                mediumScore: mediumCorrect,
+                hardScore: hardCorrect,
+                date: new Date().toISOString()
+            };
+            
+            if (window.saveStudentScoreToCloud) {
+                window.saveStudentScoreToCloud(scoreRecord);
+            }
+
+            document.getElementById('quizView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+        }
+
+        window.showReviewAnswers = function() {
+            const reviewList = document.getElementById('reviewList');
+            reviewList.innerHTML = userAnswers.map((ans, idx) => {
+                const q = ans.questionObj;
+                const isCorrect = ans.isCorrect;
+                return `
+                    <div class="p-3.5 bg-black border-2 ${isCorrect ? 'border-emerald-400' : 'border-rose-500'} rounded-xl text-xs space-y-1.5">
+                        <div class="flex justify-between font-bold">
+                            <span class="${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
+                                Dot ${idx + 1} (${q.level}) - ${q.category}
+                            </span>
+                            <span class="${isCorrect ? 'text-emerald-400' : 'text-rose-400'} font-arcade text-[9px]">
+                                ${isCorrect ? '✓ CLEARED' : '✗ GHOST HIT'}
+                            </span>
+                        </div>
+                        <div class="text-white font-semibold text-xs sm:text-sm">${q.question}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 font-semibold">
+                            <div class="p-2 bg-slate-900 border border-slate-700 rounded-lg">
+                                <span class="text-slate-400">Your Choice:</span> 
+                                <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${q.options[ans.selected]}</span>
+                            </div>
+                            <div class="p-2 bg-slate-900 border border-slate-700 rounded-lg">
+                                <span class="text-slate-400">Correct Answer:</span> 
+                                <span class="font-bold text-emerald-400">${q.options[q.correct]}</span>
+                            </div>
+                        </div>
+                        <div class="text-slate-200 bg-slate-900 p-2.5 border border-pacman-yellow rounded-lg text-[11px] font-semibold">
+                            💡 <strong>Penerangan Nota:</strong> ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('reviewView').classList.remove('hidden');
+        };
+
+        window.backToResult = function() {
+            document.getElementById('reviewView').classList.add('hidden');
+            document.getElementById('proofView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+        };
+
+        window.showProofCertificate = function() {
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('proofView').classList.remove('hidden');
+        };
+
+        window.showLeaderboardView = function() {
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('quizView').classList.add('hidden');
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('reviewView').classList.add('hidden');
+            document.getElementById('proofView').classList.add('hidden');
+            document.getElementById('leaderboardView').classList.remove('hidden');
+        };
+
+        window.closeLeaderboard = function() {
+            document.getElementById('leaderboardView').classList.add('hidden');
+            if (currentQuestionIdx > 0 && currentQuestionIdx < quizQuestions.length) {
+                document.getElementById('quizView').classList.remove('hidden');
+            } else if (userAnswers.length === quizQuestions.length) {
+                document.getElementById('resultView').classList.remove('hidden');
+            } else {
+                document.getElementById('welcomeView').classList.remove('hidden');
+            }
+        };
+
+        window.openResetModal = function() {
+            document.getElementById('resetPinInput').value = '';
+            document.getElementById('resetPinError').classList.add('hidden');
+            document.getElementById('resetPinModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('resetPinInput').focus();
+            }, 100);
+        };
+
+        window.closeResetModal = function() {
+            document.getElementById('resetPinModal').classList.add('hidden');
+        };
+
+        window.submitResetScoreboard = function() {
+            const pin = document.getElementById('resetPinInput').value.trim();
+            if (pin === '0016') {
+                localStorage.removeItem('pacman_english_quiz_local_scores');
+                localStorage.setItem('pacman_english_quiz_local_scores', '[]');
+                rawScoreboardData = [];
+                renderScoreboardTable([]);
+                closeResetModal();
+            } else {
+                document.getElementById('resetPinError').classList.remove('hidden');
+            }
+        };
+
+        window.restartGame = function() {
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('welcomeView').classList.remove('hidden');
+        };
+    </script>
+</body>
+</html>
